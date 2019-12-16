@@ -1,6 +1,6 @@
 <idea-plugin>
   <id>com.crownpartners.intellivault</id>
-  <name>IntelliVault - SIX</name>
+  <name>IntelliVault - Package Manager</name>
   <version>1.0.0</version>
   <vendor url="https://github.com/shsteimer/IntelliVault">Sean Steimer</vendor>
 
