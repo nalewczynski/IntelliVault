@@ -50,6 +50,12 @@ public class IntelliVaultSettings implements Configurable {
     private JButton btnSaveRepository;
     private JTextField txtRepoName;
 
+    private JButton btnPackagesTempDirectory;
+    private JLabel labelTempDirectory;
+    private JTextField txtPackagesTempPath;
+    private JComboBox comboServerType;
+    private JComboBox comboDefaultRepository;
+
     private IntelliVaultPreferences userPreferences;
     private String lastLoadedRepo = null;
 
@@ -74,18 +80,9 @@ public class IntelliVaultSettings implements Configurable {
         btnTempDirBrowse.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                String currentDirectory = txtTempDir.getText() != null && txtTempDir.getText().length() > 0 ?
-                        txtTempDir.getText() : CURRENT_DIRECTORY_SYMBOL;
-                chooser.setCurrentDirectory(new java.io.File(currentDirectory));
-                chooser.setDialogTitle("Select Temp Directory");
-                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                chooser.setAcceptAllFileFilterUsed(false);
-
-                // Demonstrate "Open" dialog:
-                int rVal = chooser.showOpenDialog(jPanel);
-                if (rVal == JFileChooser.APPROVE_OPTION) {
-                    txtTempDir.setText(chooser.getSelectedFile().getAbsolutePath());
+                final String path = getStringFromFileChooser("Select Temp Directory", JFileChooser.DIRECTORIES_ONLY);
+                if (path != null) {
+                    txtTempDir.setText(path);
                 }
             }
         });
@@ -93,18 +90,19 @@ public class IntelliVaultSettings implements Configurable {
         btnVaultDirBrowse.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                String curDir = txtVaultDir.getText() != null && txtVaultDir.getText().length() > 0
-                        ? txtVaultDir.getText() : CURRENT_DIRECTORY_SYMBOL;
-                chooser.setCurrentDirectory(new java.io.File(curDir));
-                chooser.setDialogTitle("Select Vault Directory");
-                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                chooser.setAcceptAllFileFilterUsed(false);
+                final String path = getStringFromFileChooser("Select Vault Directory", JFileChooser.DIRECTORIES_ONLY);
+                if (path != null) {
+                    txtVaultDir.setText(path);
+                }
+            }
+        });
 
-                // Demonstrate "Open" dialog:
-                int rVal = chooser.showOpenDialog(jPanel);
-                if (rVal == JFileChooser.APPROVE_OPTION) {
-                    txtVaultDir.setText(chooser.getSelectedFile().getAbsolutePath());
+        btnPackagesTempDirectory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final String path = getStringFromFileChooser("Select Temporary Directory For JCR Packages", JFileChooser.DIRECTORIES_ONLY);
+                if (path != null) {
+                    txtPackagesTempPath.setText(path);
                 }
             }
         });
@@ -180,6 +178,8 @@ public class IntelliVaultSettings implements Configurable {
             preferencesBean.fileIgnorePatterns = Arrays.asList(ignorePatternsArray);
         }
 
+        preferencesBean.packagesTempDirectory = txtPackagesTempPath.getText();
+        preferencesBean.defaultRepository = comboDefaultRepository.getSelectedIndex();
     }
 
     /**
@@ -209,7 +209,8 @@ public class IntelliVaultSettings implements Configurable {
                 repoName,
                 txtRepoUrl.getText(),
                 txtUsername.getText(),
-                txtPassword.getText()
+                txtPassword.getText(),
+                comboServerType.getSelectedIndex()
         );
 
         // Check if this put request is replacing an old repository configuration.
@@ -229,11 +230,13 @@ public class IntelliVaultSettings implements Configurable {
                     repoName,
                     txtRepoUrl.getText(),
                     txtUsername.getText(),
-                    txtPassword.getText()
+                    txtPassword.getText(),
+                    comboServerType.getSelectedIndex()
             );
         }
 
         rebuildRepositoryComboBox(newRepo);
+        rebuildDefaultRepositoryCombobox(comboDefaultRepository.getSelectedIndex());
     }
 
     /**
@@ -280,6 +283,9 @@ public class IntelliVaultSettings implements Configurable {
         txtIgnorePatterns.setText(ignorePatterns);
 
         rebuildRepositoryComboBox(null);
+        rebuildDefaultRepositoryCombobox(preferences.defaultRepository);
+
+        txtPackagesTempPath.setText(preferences.packagesTempDirectory);
     }
 
     /**
@@ -293,11 +299,13 @@ public class IntelliVaultSettings implements Configurable {
             txtRepoUrl.setText(repository.getRepoUrl());
             txtPassword.setText(repository.getPassword());
             txtUsername.setText(repository.getUsername());
+            comboServerType.setSelectedIndex(repository.getInstanceType());
         } else {
             txtRepoName.setText(IntelliVaultConfigDefaults.REPO_NAME);
             txtRepoUrl.setText(IntelliVaultConfigDefaults.REPO_URL);
             txtPassword.setText(IntelliVaultConfigDefaults.REPO_PASSWORD);
             txtUsername.setText(IntelliVaultConfigDefaults.REPO_USER);
+            comboServerType.setSelectedIndex(IntelliVaultConfigDefaults.INSTANCE_TYPE);
         }
     }
 
@@ -320,6 +328,35 @@ public class IntelliVaultSettings implements Configurable {
             comboProfileSelect.setSelectedItem(selectedItem);
         }
         setDialogStateFromRepository(selectedItem);
+    }
+
+    private void rebuildDefaultRepositoryCombobox(int selectedIndex) {
+        comboDefaultRepository.removeAllItems();
+        comboDefaultRepository.addItem("No default repository");
+        List<IntelliVaultCRXRepository> rValues = userPreferences.getRepoConfigList();
+        for (IntelliVaultCRXRepository repo : rValues) {
+            comboDefaultRepository.addItem(repo);
+        }
+
+        comboDefaultRepository.setSelectedIndex(selectedIndex);
+    }
+
+    private String getStringFromFileChooser(final String title, final int fileSelecttionMode) {
+        JFileChooser chooser = new JFileChooser();
+        String curDir = txtVaultDir.getText() != null && txtVaultDir.getText().length() > 0
+                ? txtVaultDir.getText() : CURRENT_DIRECTORY_SYMBOL;
+        chooser.setCurrentDirectory(new java.io.File(curDir));
+        chooser.setDialogTitle(title);
+        chooser.setFileSelectionMode(fileSelecttionMode);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        // Demonstrate "Open" dialog:
+        int rVal = chooser.showOpenDialog(jPanel);
+        if (rVal == JFileChooser.APPROVE_OPTION) {
+            return chooser.getSelectedFile().getAbsolutePath();
+        }
+
+        return null;
     }
 
     @Override

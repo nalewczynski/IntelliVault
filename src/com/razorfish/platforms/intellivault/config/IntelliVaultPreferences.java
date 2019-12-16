@@ -27,6 +27,9 @@ public class IntelliVaultPreferences implements Serializable, Cloneable {
 
     public List<IntelliVaultCRXRepository> repoConfigList;
     public String lastUsedRepoName;
+    public String packagesTempDirectory;
+
+    public int defaultRepository;
 
     /**
      * Create a default preferences object.
@@ -45,6 +48,9 @@ public class IntelliVaultPreferences implements Serializable, Cloneable {
         this.fileIgnorePatterns = operationConfig.getFileIgnorePatterns();
         this.repoConfigList = new LinkedList<>();
         this.lastUsedRepoName = null;
+
+        this.packagesTempDirectory = operationConfig.getPackagesTempDirectory();
+        this.defaultRepository = operationConfig.getDefaultRepository();
     }
 
     /**
@@ -53,7 +59,6 @@ public class IntelliVaultPreferences implements Serializable, Cloneable {
      * @return the operation config
      */
     public IntelliVaultOperationConfig getOperationConfig() {
-
         IntelliVaultOperationConfig operationConfig = new IntelliVaultOperationConfig();
         operationConfig.setVaultPath(this.vaultPath);
         operationConfig.setTempDirectory(this.tempDirectory);
@@ -66,6 +71,9 @@ public class IntelliVaultPreferences implements Serializable, Cloneable {
 
         operationConfig.setFileIgnorePatterns(this.fileIgnorePatterns);
 
+        operationConfig.setPackagesTempDirectory(this.packagesTempDirectory);
+        operationConfig.setDefaultRepository(this.defaultRepository);
+
         return operationConfig;
     }
 
@@ -76,12 +84,14 @@ public class IntelliVaultPreferences implements Serializable, Cloneable {
      * @param url      The url of the repository to put.
      * @param username The username of the repository to put.
      * @param password The password of the repository to put.
+     * @param instanceType Type of the instance (local/dev/qa/prod).
      * @return The newly put or updated {@link IntelliVaultCRXRepository}
-     * @see IntelliVaultPreferences#putRepositoryConfiguration(String, String, String, String)
+     * @see IntelliVaultPreferences#putRepositoryConfiguration(String, String, String, String, int)
      */
     public IntelliVaultCRXRepository putRepositoryConfiguration(final String repoName, final String url,
-            final String username, final String password) {
-        IntelliVaultCRXRepository repo = new IntelliVaultCRXRepository(repoName, url, username, password);
+                                                                final String username, final String password,
+                                                                final int instanceType) {
+        IntelliVaultCRXRepository repo = new IntelliVaultCRXRepository(repoName, url, username, password, instanceType);
         return putRepositoryConfiguration(repo);
     }
 
@@ -184,6 +194,8 @@ public class IntelliVaultPreferences implements Serializable, Cloneable {
         }
 
         prefs.lastUsedRepoName = this.lastUsedRepoName;
+        prefs.packagesTempDirectory = packagesTempDirectory;
+        prefs.defaultRepository = defaultRepository;
 
         return prefs;
     }

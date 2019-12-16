@@ -9,11 +9,18 @@ import java.io.Serializable;
  */
 public class IntelliVaultCRXRepository implements Serializable, Comparable<IntelliVaultCRXRepository>, Cloneable {
 
+
+    public final static int INSTANCE_TYPE_LOCAL = 0;
+    public final static int INSTANCE_TYPE_DEV = 1;
+    public final static int INSTANCE_TYPE_QA = 2;
+    public final static int INSTANCE_TYPE_PROD = 3;
+
     private static final long serialVersionUID = 8008135L;
     private String name;
     private String repoUrl;
     private String username;
     private String password;
+    private int instanceType;
 
     /**
      * Create a new instance, pre-populating the default values for name, url, username, and password.
@@ -23,16 +30,18 @@ public class IntelliVaultCRXRepository implements Serializable, Comparable<Intel
         this.repoUrl = IntelliVaultConfigDefaults.REPO_URL;
         this.password = IntelliVaultConfigDefaults.REPO_PASSWORD;
         this.username = IntelliVaultConfigDefaults.REPO_USER;
+        this.instanceType = IntelliVaultConfigDefaults.INSTANCE_TYPE;
     }
 
     /**
      * Create a new instance with the supplied name, url, username, password.
      */
-    public IntelliVaultCRXRepository(String name, String repoUrl, String username, String password) {
+    public IntelliVaultCRXRepository(String name, String repoUrl, String username, String password, int instanceType) {
         this.name = name;
         this.repoUrl = repoUrl;
         this.username = username;
         this.password = password;
+        this.instanceType = instanceType;
     }
 
     public String getPassword() {
@@ -67,11 +76,20 @@ public class IntelliVaultCRXRepository implements Serializable, Comparable<Intel
         this.name = name;
     }
 
+    public int getInstanceType() {
+        return instanceType;
+    }
+
+    public void setInstanceType(int instanceType) {
+        this.instanceType = instanceType;
+    }
+
     public void replaceWith(IntelliVaultCRXRepository otherRepoConfig) {
         this.name = otherRepoConfig.getName();
         this.repoUrl = otherRepoConfig.getRepoUrl();
         this.username = otherRepoConfig.getUsername();
         this.password = otherRepoConfig.getPassword();
+        this.instanceType = otherRepoConfig.getInstanceType();
     }
 
     @Override

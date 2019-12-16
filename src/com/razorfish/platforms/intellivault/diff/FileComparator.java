@@ -2,11 +2,7 @@ package com.razorfish.platforms.intellivault.diff;
 
 import com.intellij.openapi.vfs.VirtualFile;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Compares files to determine if the files are actually different or if the

@@ -32,4 +32,10 @@ public class IntelliVaultConfigDefaults {
     public static final boolean SHOW_MESSAGE_DIALOG = true;
 
     public static final String VAULT_PATH = "";
+
+    public static final int INSTANCE_TYPE = IntelliVaultCRXRepository.INSTANCE_TYPE_LOCAL;
+
+    //zero for no default
+    public static final int DEFAULT_REPOSITORY = 0;
+
 }

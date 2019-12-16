@@ -19,6 +19,9 @@ public class IntelliVaultOperationConfig {
     private boolean logToConsole;
     private List<String> fileIgnorePatterns;
     private boolean showMessageDialogs;
+    private String packagesTempDirectory;
+    private int instanceType;
+    private int defaultRepository;
 
     /**
      * Create a new instance using the default value for all fields of the operation config
@@ -33,6 +36,8 @@ public class IntelliVaultOperationConfig {
         this.fileIgnorePatterns =
                 new LinkedList<String>(Arrays.asList(IntelliVaultConfigDefaults.IGNORE_PATTERNS.split(",")));
         this.showMessageDialogs = IntelliVaultConfigDefaults.SHOW_MESSAGE_DIALOG;
+        this.packagesTempDirectory = System.getProperty(TEMP_DIR_PROP);
+        this.instanceType = IntelliVaultCRXRepository.INSTANCE_TYPE_LOCAL;
     }
 
     public String getVaultPath() {
@@ -97,5 +102,29 @@ public class IntelliVaultOperationConfig {
 
     public void setShowMessageDialogs(boolean showMessageDialogs) {
         this.showMessageDialogs = showMessageDialogs;
+    }
+
+    public String getPackagesTempDirectory() {
+        return packagesTempDirectory;
+    }
+
+    public void setPackagesTempDirectory(String packagesTempDirectory) {
+        this.packagesTempDirectory = packagesTempDirectory;
+    }
+
+    public int getInstanceType() {
+        return instanceType;
+    }
+
+    public void setInstanceType(int instanceType) {
+        this.instanceType = instanceType;
+    }
+
+    public int getDefaultRepository() {
+        return defaultRepository;
+    }
+
+    public void setDefaultRepository(int defaultRepository) {
+        this.defaultRepository = defaultRepository;
     }
 }

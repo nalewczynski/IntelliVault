@@ -17,15 +17,7 @@ import com.razorfish.platforms.intellivault.services.VaultInvokerService;
 import com.razorfish.platforms.intellivault.utils.FileUtils;
 import com.razorfish.platforms.intellivault.utils.IntelliVaultConstants;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +49,7 @@ public class IntelliVaultServiceImpl implements IntelliVaultService {
 
     @Override
     public void vaultExport(final IntelliVaultCRXRepository repository, final IntelliVaultOperationConfig opConf,
-            final VaultOperationDirectory exportOpDir, final ProgressIndicator progressIndicator, ConsoleView console)
+                            final VaultOperationDirectory exportOpDir, final ProgressIndicator progressIndicator, ConsoleView console)
             throws IntelliVaultException {
         progressIndicator.setText2("Preparing export");
 
@@ -104,7 +96,7 @@ public class IntelliVaultServiceImpl implements IntelliVaultService {
 
     @Override
     public void vaultImport(final IntelliVaultCRXRepository repository, final IntelliVaultOperationConfig opConf,
-            final VaultOperationDirectory importOpDir, ProgressIndicator progressIndicator, ConsoleView console)
+                            final VaultOperationDirectory importOpDir, ProgressIndicator progressIndicator, ConsoleView console)
             throws IntelliVaultException {
         progressIndicator.setText2("Preparing import");
 
@@ -175,7 +167,7 @@ public class IntelliVaultServiceImpl implements IntelliVaultService {
     }
 
     private String[] prepareImportArgsList(final IntelliVaultCRXRepository repository,
-            final IntelliVaultOperationConfig opConf, final File importBaseDir) {
+                                           final IntelliVaultOperationConfig opConf, final File importBaseDir) {
         List<String> argsList = new ArrayList<String>();
 
         if (opConf.isDebug()) {
@@ -202,7 +194,7 @@ public class IntelliVaultServiceImpl implements IntelliVaultService {
     }
 
     private String[] prepareExportArgsList(final IntelliVaultCRXRepository repository,
-            final IntelliVaultOperationConfig opConf, final File exportBaseDir, final File filterFile) {
+                                           final IntelliVaultOperationConfig opConf, final File exportBaseDir, final File filterFile) {
         List<String> argsList = new ArrayList<String>();
 
         if (opConf.isDebug()) {

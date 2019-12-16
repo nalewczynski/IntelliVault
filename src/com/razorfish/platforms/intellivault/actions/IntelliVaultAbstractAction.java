@@ -62,15 +62,21 @@ public abstract class IntelliVaultAbstractAction extends AnAction {
 
             List<IntelliVaultCRXRepository> repoConfigList = preferences.getRepoConfigList();
             if (repoConfigList.size() > 1) {
-                // Shows the dialog that lets the user select one of their configured CRX Repositories.
-                final IntelliVaultRepositorySelector form = new IntelliVaultRepositorySelector(project, this);
-                form.show();
-                log.info("form exit code is " + form.getExitCode() + " we need " + DialogWrapper.OK_EXIT_CODE);
-                if (form.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-                    IntelliVaultCRXRepository repository = getSelectedIntelliVaultCRXRepository();
+                if (preferences.defaultRepository > 0) {
+                    // 0 is no default repository
+                    IntelliVaultCRXRepository repository = repoConfigList.get(preferences.defaultRepository - 1);
                     runAction(conf, vaultOpDir, project, repository);
                 } else {
-                    log.debug("User canceled action");
+                    // Shows the dialog that lets the user select one of their configured CRX Repositories.
+                    final IntelliVaultRepositorySelector form = new IntelliVaultRepositorySelector(project, this);
+                    form.show();
+                    log.info("form exit code is " + form.getExitCode() + " we need " + DialogWrapper.OK_EXIT_CODE);
+                    if (form.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+                        IntelliVaultCRXRepository repository = getSelectedIntelliVaultCRXRepository();
+                        runAction(conf, vaultOpDir, project, repository);
+                    } else {
+                        log.debug("User canceled action");
+                    }
                 }
             } else {
                 IntelliVaultCRXRepository repository = repoConfigList.get(0);
@@ -84,7 +90,7 @@ public abstract class IntelliVaultAbstractAction extends AnAction {
     }
 
     private void runAction(IntelliVaultOperationConfig conf, VaultOperationDirectory vaultOpDir, Project project,
-            IntelliVaultCRXRepository repository) {
+                           IntelliVaultCRXRepository repository) {
         if (repository != null) {
             boolean proceed = !conf.showMessageDialogs() || (Messages.showYesNoDialog(
                     String.format(getDialogMessage(), repository.getRepoUrl() + vaultOpDir.getJcrPath(),
@@ -101,7 +107,7 @@ public abstract class IntelliVaultAbstractAction extends AnAction {
     }
 
     protected abstract Task getTask(VaultOperationDirectory vaultOpDir, IntelliVaultOperationConfig conf,
-            IntelliVaultCRXRepository repository, Project project);
+                                    IntelliVaultCRXRepository repository, Project project);
 
     protected abstract String getDialogMessage();
 
